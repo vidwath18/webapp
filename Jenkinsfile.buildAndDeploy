@@ -23,7 +23,7 @@ pipeline {
         
         stage ('Deploy-To-Tomcat') {
             steps {
-                sh 'cp /var/lib/jenkins/workspace/webapp-build-deploy-pipeline/target/WebApp.war /home/appsec/prod/apache-tomcat-8.5.39/webapps/webapp.war'
+                sh 'cp /var/lib/jenkins/workspace/webapp-build-deploy-pipeline/target/WebApp.war /home/appsec/prod/apache-tomcat-8.5.56/webapps/webapp.war'
                 
            }
         }
