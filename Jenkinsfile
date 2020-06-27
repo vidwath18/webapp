@@ -31,21 +31,24 @@ pipeline {
 	    
 	stage ('Source-Composition-Analysis') {
 		steps {
+		sshagent(['sast']) {
+		     sh 'ssh -o StrictHostKeyChecking=no ubuntu@35.158.101.116'	
 		     sh 'rm owasp-* || true'
 		     sh 'wget https://raw.githubusercontent.com/vidwath18/webapp/master/owasp-dependency-check.sh'	
 		     sh 'chmod +x owasp-dependency-check.sh'
 		     sh 'bash owasp-dependency-check.sh'
 		     sh 'cat /var/lib/jenkins/OWASP-Dependency-Check/reports/dependency-check-report.xml'
 		}
+	    }
 	}
 
 	stage ('SAST') {
 		steps {
-		withSonarQubeEnv('sonar') {
-			sh 'mvn sonar:sonar'
-			sh 'cat target/sonar/report-task.txt'
-		       }
-		}
+		  withSonarQubeEnv('sonar') {
+		  sh 'mvn sonar:sonar'
+		  sh 'cat target/sonar/report-task.txt'
+		 }
+            }	
 	}
        stage ('Deploy-To-Tomcat') {
             steps {
