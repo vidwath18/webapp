@@ -8,7 +8,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>Demo Website for Secure Coding</title>
+    <title>Demo DevSecOps</title>
 
 
     <!-- Custom styles for this template -->
