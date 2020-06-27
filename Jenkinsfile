@@ -67,7 +67,7 @@ pipeline {
 		  
 		    	steps {
 			    sshagent(['zap']) {
-				    sh 'ssh -o StrictHostKeyChecking=no ubuntu@35.158.160.207 "docker run -t owasp/zap2docker-stable zap-baseline.py -t http://18.156.162.97:8080/webapp/" || true'
+				    sh 'ssh -o StrictHostKeyChecking=no ubuntu@18.185.211.172 "docker run -t owasp/zap2docker-stable zap-baseline.py -t http://18.157.159.70:8080/webapp/" || true'
 			    }
 			}
 		}    
@@ -76,7 +76,7 @@ pipeline {
 		    steps {
 			sh 'rm nikto-output.xml || true'
 			sh 'docker pull secfigo/nikto:latest'
-			sh 'docker run --user $(id -u):$(id -g) --rm -v $(pwd):/report -i secfigo/nikto:latest -h 18.156.162.97 -p 8080 -output /report/nikto-output.xml'
+			sh 'docker run --user $(id -u):$(id -g) --rm -v $(pwd):/report -i secfigo/nikto:latest -h 18.157.159.70 -p 8080 -output /report/nikto-output.xml'
 			sh 'cat nikto-output.xml'   
 		    }
 	    }
@@ -84,7 +84,7 @@ pipeline {
 	    stage ('SSL Checks') {
 		    steps {
 			sh 'pip install sslyze==1.4.2'
-			sh 'python -m sslyze --regular 18.156.162.97 --json_out sslyze-output.json'
+			sh 'python -m sslyze --regular 18.157.159.70 --json_out sslyze-output.json'
 			sh 'cat sslyze-output.json'
 		    }
 	    }
@@ -94,11 +94,11 @@ pipeline {
 			sh 'pip install requests'
 			sh 'wget https://raw.githubusercontent.com/vidwath18/webapp/master/upload-results.py'
 			sh 'chmod +x upload-results.py'
-			sh 'python upload-results.py --host 35.158.160.207:80 --api_key 66879c160803596f132aff025fee9a170366f615 --engagement_id 4 --result_file trufflehog --username admin --scanner "SSL Labs Scan"'
-			sh 'python upload-results.py --host 35.158.160.207:80 --api_key 66879c160803596f132aff025fee9a170366f615 --engagement_id 4 --result_file /var/lib/jenkins/OWASP-Dependency-Check/reports/dependency-check-report.xml --username admin --scanner "Dependency Check Scan"'
-			sh 'python upload-results.py --host 35.158.160.207:80 --api_key 66879c160803596f132aff025fee9a170366f615 --engagement_id 4 --result_file nmap --username admin --scanner "Nmap Scan"'
-			sh 'python upload-results.py --host 35.158.160.207:80 --api_key 66879c160803596f132aff025fee9a170366f615 --engagement_id 4 --result_file sslyze-output.json --username admin --scanner "SSL Labs Scan"'
-			sh 'python upload-results.py --host 35.158.160.207:80 --api_key 66879c160803596f132aff025fee9a170366f615 --engagement_id 4 --result_file nikto-output.xml --username admin'
+			sh 'python upload-results.py --host 18.157.159.70:80 --api_key 66879c160803596f132aff025fee9a170366f615 --engagement_id 4 --result_file trufflehog --username admin --scanner "SSL Labs Scan"'
+			sh 'python upload-results.py --host 18.157.159.70:80 --api_key 66879c160803596f132aff025fee9a170366f615 --engagement_id 4 --result_file /var/lib/jenkins/OWASP-Dependency-Check/reports/dependency-check-report.xml --username admin --scanner "Dependency Check Scan"'
+			sh 'python upload-results.py --host 18.157.159.70:80 --api_key 66879c160803596f132aff025fee9a170366f615 --engagement_id 4 --result_file nmap --username admin --scanner "Nmap Scan"'
+			sh 'python upload-results.py --host 18.157.159.70:80 --api_key 66879c160803596f132aff025fee9a170366f615 --engagement_id 4 --result_file sslyze-output.json --username admin --scanner "SSL Labs Scan"'
+			sh 'python upload-results.py --host 18.157.159.70:80 --api_key 66879c160803596f132aff025fee9a170366f615 --engagement_id 4 --result_file nikto-output.xml --username admin'
 			    
 		    }
 	    }
