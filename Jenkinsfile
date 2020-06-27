@@ -29,12 +29,18 @@ pipeline {
             }
         }    
 	    
-  	stage ('Run Trivy') {
-		    steps {
-	        sh 'trivy repo https://github.com/vidwath18/webapp.git > trivy'
-		sh 'cat trivy'
-	   	 }
+  	stage ('Source-Composition-Analysis') {
+		steps {
+		sshagent(['sast']) {
+		     sh 'ssh -o StrictHostKeyChecking=no ubuntu@35.158.101.116'	
+		     sh 'rm owasp-* || true'
+		     sh 'wget https://raw.githubusercontent.com/vidwath18/webapp/master/owasp-dependency-check.sh'	
+		     sh 'chmod +x owasp-dependency-check.sh'
+		     sh 'bash owasp-dependency-check.sh'
+		     sh 'cat /var/lib/jenkins/OWASP-Dependency-Check/reports/dependency-check-report.xml'
+			}
 	    }
+	}
 	    
        stage ('Deploy-To-Tomcat') {
             steps {
@@ -70,13 +76,7 @@ pipeline {
 		    }
 	    }
 	    
-	    stage ('SSL Checks') {
-		    steps {
-			sh 'pip install sslyze==1.4.2'
-			sh 'python -m sslyze --regular 18.157.159.70 --json_out sslyze-output.json'
-			sh 'cat sslyze-output.json'
-		    }
-	    }
+	   
 	    
 	    stage ('Upload Reports to Defect Dojo') {
 		    steps {
@@ -84,13 +84,12 @@ pipeline {
 			sh 'wget https://raw.githubusercontent.com/vidwath18/webapp/master/upload-results.py'
 			sh 'chmod +x upload-results.py'
 			sh 'python upload-results.py --host 18.157.159.70:80 --api_key 66879c160803596f132aff025fee9a170366f615 --engagement_id 4 --result_file trufflehog --username admin --scanner "SSL Labs Scan"'
+			sh 'python upload-results.py --host 18.157.159.70:80 --api_key 66879c160803596f132aff025fee9a170366f615 --engagement_id 4 --result_file /var/lib/jenkins/OWASP-Dependency-Check/reports/dependency-check-report.xml --username admin --scanner "Dependency Check Scan"'
 			sh 'python upload-results.py --host 18.157.159.70:80 --api_key 66879c160803596f132aff025fee9a170366f615 --engagement_id 4 --result_file nmap --username admin --scanner "Nmap Scan"'
-			sh 'python upload-results.py --host 18.157.159.70:80 --api_key 66879c160803596f132aff025fee9a170366f615 --engagement_id 4 --result_file sslyze-output.json --username admin --scanner "SSL Labs Scan"'
 			sh 'python upload-results.py --host 18.157.159.70:80 --api_key 66879c160803596f132aff025fee9a170366f615 --engagement_id 4 --result_file nikto-output.xml --username admin'
 			    
 		    }
 	    }
-	    
 	
     }
 }
