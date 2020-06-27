@@ -29,15 +29,13 @@ pipeline {
             }
         }    
 	    
-
-	stage ('SAST') {
-		steps {
-		  withSonarQubeEnv('sonar') {
-		  sh 'mvn sonar:sonar'
-		  sh 'cat target/sonar/report-task.txt'
-		 }
-            }	
-	}
+  	stage ('Run Trivy') {
+		    steps {
+	        sh 'trivy repo https://github.com/vidwath18/webapp.git > trivy'
+		sh 'cat trivy'
+	   	 }
+	    }
+	    
        stage ('Deploy-To-Tomcat') {
             steps {
            sshagent(['tomcat']) {
