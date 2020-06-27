@@ -29,14 +29,6 @@ pipeline {
             }
         }    
 	    
-  	stage ('Source-Composition-Analysis') {
-		steps {
-		     sh 'rm synk-* || true'
-		     sh 'snykSecurity snykInstallation: 'Please define a Snyk installation in the Jenkins Global Tool Configuration. This task will not run without a Snyk installation.', snykTokenId: 'snyk'
-			}
-	    }
-	}
-	    
        stage ('Deploy-To-Tomcat') {
             steps {
            sshagent(['tomcat']) {
