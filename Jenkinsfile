@@ -39,7 +39,7 @@ pipeline {
        stage ('Deploy-To-Tomcat') {
             steps {
            sshagent(['tomcat']) {
-                sh 'scp -o StrictHostKeyChecking=no target/*.war ubuntu@18.156.162.97:/home/ubuntu/prod/apache-tomcat-8.5.56/webapps/webapp.war'
+                sh 'scp -o StrictHostKeyChecking=no target/*.war ubuntu@18.157.159.70:/home/ubuntu/prod/apache-tomcat-8.5.56/webapps/webapp.war'
               }      
            }       
     }
@@ -47,7 +47,7 @@ pipeline {
 	    stage ('Port Scan') {
 		    steps {
 			sh 'rm nmap* || true'
-			sh 'docker run --rm -v "$(pwd)":/data uzyexe/nmap -sS -sV -oX nmap 18.156.162.97'
+			sh 'docker run --rm -v "$(pwd)":/data uzyexe/nmap -sS -sV -oX nmap 18.157.159.70'
 			sh 'cat nmap'
 		    }
 	    }
